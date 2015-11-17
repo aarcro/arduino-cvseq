@@ -8,21 +8,19 @@
 #include "Arduino.h"
 #include "CvSeq.h"
 
-#define _PINGPONG_UP = 1;     // cycle left to right then reverse
-#define _PINGPONG_DOWN = -1;  // cycle right to left then reverse
-#define _FWD_MODE = 3;        // cycle left to right
-#define _REV_MODE = 4;        // cycle right to left
-#define _ONE_OUT = 1;         // run 16 steps to one output pin
-#define _TWO_OUT = 2;         // run 8 steps, top and bottom bank to their own pin
+#define _PINGPONG_UP 1     // cycle left to right then reverse
+#define _PINGPONG_DOWN -1  // cycle right to left then reverse
+#define _FWD_MODE 3        // cycle left to right
+#define _REV_MODE 4        // cycle right to left
+#define _ONE_OUT 1         // run 16 steps to one output pin
+#define _TWO_OUT 2         // run 8 steps, top and bottom bank to their own pin
 
 
 CvSeq::CvSeq(
   int top_active,
   int bot_active,
   int top_in,
-  int bot_in,
-  int out1,
-  int out2,
+  int bot_in
 ){
     pinMode(8, OUTPUT);
     pinMode(9, OUTPUT);
@@ -36,16 +34,10 @@ CvSeq::CvSeq(
     _top_in = top_in;
     _bot_in = bot_in;
 
-    pinMode(out1, OUTPUT);
-    pinMode(out2, OUTPUT);
-    _out1 = out1;
-    _out2 = out2;
-
     // TODO: call reset
     _loop_mode = _FWD_MODE;
     _out_mode = _ONE_OUT;
     _cur_step = 0;
-    _pingpong_dir = 1;
 }
 
 int CvSeq::step(){
@@ -101,11 +93,16 @@ int CvSeq::step(){
         case _ONE_OUT:
             // Send top bank for low values
             // Or bottom bank for high values
-            ret_value = _cur_step < 8 ? top_value : bot_value;
+            ret_value = _cur_step < 8 ? _top_value : _bot_value;
+            digitalWrite(_top_active, _cur_step < 8 ? LOW : HIGH);  // active low
+            digitalWrite(_bot_active, _cur_step > 7 ? LOW : HIGH);  // active low
             break;
         case _TWO_OUT:
             // Always the top bank in double read
-            ret_value = top_value;
+            ret_value = _top_value;
+            // Both lights active
+            digitalWrite(_top_active, LOW);
+            digitalWrite(_bot_active, LOW);
             break;
     }
 
@@ -129,7 +126,7 @@ void CvSeq::setReverse(){
 }
 
 void CvSeq::setPingPong(){
-    _loop_mode = _PINGPONG_MODE;
+    _loop_mode = _PINGPONG_UP;
 }
 
 void CvSeq::setOneSixteen(){

@@ -6,8 +6,10 @@
     * Output - 2x 4051 multiplexer 8x LED each to align with input pot
     *   Z (input) held high
 
-  Pins:
-    * addr[1,2,3] - Digital pins to write multiplex addresses
+  Fixed Pins
+    * 8, 9, 10 - Digital pins to write multiplex addresses, (PORTB)
+   
+  Configurable Pins:
     * top_active - Digital pin E on the top bank (active low)
     * bot_active - Digital pin E on the bottom bank (active low)
     * top_in - Analog pin to read top bank
@@ -28,7 +30,7 @@ class CvSeq
         int top_active,
         int bot_active,
         int top_in,
-        int bot_in,
+        int bot_in
     );
     int step();              // run the next step
     void setLoop();
@@ -41,15 +43,15 @@ class CvSeq
   private:
     int _loop_mode;
     int _out_mode;
-    int _top_active,
-    int _bot_active,
-    int _top_in,
-    int _bot_in,
-    int _top_value,
-    int _bot_value,
-    int _out1,
-    int _out2,
-    int _cur_step,
+    int _top_active;
+    int _bot_active;
+    int _top_in;
+    int _bot_in;
+    int _top_value;
+    int _bot_value;
+    int _out1;
+    int _out2;
+    int _cur_step;
 };
 
 #endif

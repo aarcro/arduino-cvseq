@@ -1,0 +1,9 @@
+CvSeq	KEYWORD1
+step	KEYWORD2
+setLoop	KEYWORD2
+setReverse	KEYWORD2
+setPingPong	KEYWORD2
+setOneSixteen	KEYWORD2
+setTwoEights	KEYWORD2
+getTopVal	KEYWORD2
+getBotVal	KEYWORD2
