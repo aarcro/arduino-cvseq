@@ -38,8 +38,10 @@ class CvSeq
     void setPingPong();
     void setOneSixteen();
     void setTwoEights();
-    int getTopVal();
-    int getBotVal();
+    bool isDoubleOut();
+    int getStep();
+    int getPrimary();
+    int getSecondary();
   private:
     int _loop_mode;
     int _out_mode;

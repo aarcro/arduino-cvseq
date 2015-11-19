@@ -12,8 +12,8 @@
 #define _PINGPONG_DOWN -1  // cycle right to left then reverse
 #define _FWD_MODE 3        // cycle left to right
 #define _REV_MODE 4        // cycle right to left
-#define _ONE_OUT 1         // run 16 steps to one output pin
-#define _TWO_OUT 2         // run 8 steps, top and bottom bank to their own pin
+#define _ONE_OUT 2         // run (2*8) 16 steps to one output pin
+#define _TWO_OUT 1         // run (1*8) 8 steps, top and bottom bank to their own pin
 
 
 CvSeq::CvSeq(
@@ -37,7 +37,7 @@ CvSeq::CvSeq(
     // TODO: call reset
     _loop_mode = _FWD_MODE;
     _out_mode = _ONE_OUT;
-    _cur_step = 0;
+    _cur_step = -1;
 }
 
 int CvSeq::step(){
@@ -49,13 +49,13 @@ int CvSeq::step(){
         case _FWD_MODE:
             _cur_step++;
             // If we overflowed, reset to zero
-            if (_cur_step == _out_mode * 8) {
+            if (_cur_step >= _out_mode * 8) {
                 _cur_step = 0;
             }
             break;
         case _REV_MODE:
             // If we're at the start, reset to max
-            if (_cur_step == 0) {
+            if (_cur_step <= 0) {
                 _cur_step = _out_mode * 8 ;
             }
             _cur_step--;
@@ -63,14 +63,14 @@ int CvSeq::step(){
         case _PINGPONG_UP:
             _cur_step++;
             // At the end, time to reverse
-            if (_cur_step == _out_mode * 8) {
+            if (_cur_step >= _out_mode * 8) {
                 _cur_step--;
                 _loop_mode = _PINGPONG_DOWN;
             }
             break;
         case _PINGPONG_DOWN:
             // At the start, time to reverse
-            if (_cur_step == 0) {
+            if (_cur_step <= 0) {
                 _loop_mode = _PINGPONG_UP;
             } else {
                 _cur_step--;
@@ -109,12 +109,32 @@ int CvSeq::step(){
     return ret_value;
 }
 
-int CvSeq::getTopVal(){
-    return _top_value;
+int CvSeq::getStep(){
+    return _cur_step;
 }
 
-int CvSeq::getBotVal(){
-    return _bot_value;
+int CvSeq::getPrimary(){
+    int ret_value;
+    switch (_out_mode){
+        case _ONE_OUT:
+            // Pick top (low count) or bottom (high count)
+            return _cur_step < 8 ? _top_value : _bot_value;
+        case _TWO_OUT:
+            // Always the top bank in double read
+            return  _top_value;
+    }
+}
+
+int CvSeq::getSecondary(){
+    if (_out_mode == _TWO_OUT) {
+        return _bot_value;
+    } else {
+        return -1;
+    }
+}
+
+bool CvSeq::isDoubleOut(){
+    return _out_mode == _TWO_OUT;
 }
 
 void CvSeq::setLoop(){
@@ -126,7 +146,16 @@ void CvSeq::setReverse(){
 }
 
 void CvSeq::setPingPong(){
-    _loop_mode = _PINGPONG_UP;
+    switch(_loop_mode){
+        // If going backwards, stay backwards
+        case _REV_MODE:
+        case _PINGPONG_DOWN:
+            _loop_mode = _PINGPONG_DOWN;
+            break;
+        default:
+            _loop_mode = _PINGPONG_UP;
+            break;
+    }
 }
 
 void CvSeq::setOneSixteen(){
@@ -135,4 +164,6 @@ void CvSeq::setOneSixteen(){
 
 void CvSeq::setTwoEights(){
     _out_mode = _TWO_OUT;
+    // make sure step is 0-7
+    _cur_step = _cur_step % 8;
 }
