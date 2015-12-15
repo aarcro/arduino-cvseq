@@ -65,17 +65,15 @@ void loop() {
     seq.setTwoEights();
 
     int note = seq.step();
-    int val = map(note, 900, 1023, 0, 240);
-    /*
+    int val = map(note, 0, 1023, 0, 24);
     Serial.println(
         "Step: " + String(seq.getStep()) +
         " Primary: " + String(note) +
         " Primary Note: " + String(val) +
         " Secondary: " + String(seq.getSecondary())
     );
-    */
 
-    analogWrite(OUT_PIN_1, val);
+    analogWrite(OUT_PIN_1, val * 5);
     // TODO Tempo factor
-    delay(300);
+    delay(200);
 }

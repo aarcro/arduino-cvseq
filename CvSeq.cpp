@@ -80,8 +80,11 @@ int CvSeq::step(){
 
     // Set address lines
     tmp_port = PINB;            // Read PORTB (pins 8-15)
+    Serial.println("read " + String(tmp_port));
     tmp_port &= B11111000;      // Mask out the addr pins
+    Serial.println("masked " + String(tmp_port));
     tmp_port |= _cur_step % 8;  // Set the addr pins with 0-7
+    Serial.println("write " + String(tmp_port));
     PORTB = tmp_port;           // Write new value
 
     // Read pot(s)
