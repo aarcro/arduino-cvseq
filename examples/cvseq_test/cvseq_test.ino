@@ -1,7 +1,9 @@
 #include <CvSeq.h>
 
 #define LED_PIN 13
-#define OUT_PIN_1 3
+#define OUT_PIN_1 6
+#define OUT_PIN_2 5
+#define TEMPO_PIN 2
 
 /*
     To play around with the Sequencer, wire a photo resitor to A0
@@ -12,17 +14,16 @@
 CvSeq seq(
     2,  // int top_active
     3,  // int bot_active
-    0,  // int top_in
-    1   // int bot_in
+    0,  // int top_in (Analog)
+    1   // int bot_in (Analog)
 );
 
 void setup() {
     // put your setup code here, to run once:
     pinMode(LED_PIN, OUTPUT);
     pinMode(OUT_PIN_1, OUTPUT);
+    pinMode(OUT_PIN_2, OUTPUT);
 
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
     Serial.begin(9600);
 }
 
@@ -61,19 +62,34 @@ void loop() {
         }
     }
 
-    // With only one input wired up, use 8 step, ignore secondary
+    // Run 2x8
     seq.setTwoEights();
 
+    // step and Quant Primary
     int note = seq.step();
     int val = map(note, 0, 1023, 0, 24);
+
+    // Quant Secondary
+    int val2= map(seq.getSecondary(), 0, 1023, 0, 24);
+    /*
     Serial.println(
         "Step: " + String(seq.getStep()) +
         " Primary: " + String(note) +
         " Primary Note: " + String(val) +
         " Secondary: " + String(seq.getSecondary())
     );
+    */
 
+    // Write
     analogWrite(OUT_PIN_1, val * 5);
-    // TODO Tempo factor
-    delay(200);
+    analogWrite(OUT_PIN_2, val2 * 5);
+
+    // Quant Tempo off Analog input
+    // Sleep in ms.
+    // 60 bpm = 1000ms
+    // 300 bpm = 200ms
+    // 600 bpm = 100ms
+    // 60 to 2400 bpm (exponetial scale)
+    int tempo = map(analogRead(TEMPO_PIN), 0, 1023, 33, 5);
+    delay(tempo * tempo);
 }
