@@ -12,6 +12,32 @@
     and an LED + speaker to pin 3
 */
 
+//Arpeggiator define
+// vvv #include <werkstatt.h> vvv
+
+#define tonic 0
+#define minor2nd 5
+#define major2nd 10
+#define minor3rd 15
+#define major3rd 20
+#define fourth 25
+#define tritone 30
+#define fifth 35
+#define minor6th 40
+#define major6th 45
+#define minor7th 50
+#define major7th 55
+#define octave 60
+#define octave2 120
+
+// ^^^ #include <werkstatt.h> ^^^
+
+int scale[] = {tonic, major2nd, major3rd, fourth, fifth, major6th, major7th};
+int scale_size = sizeof(scale)/sizeof(int);
+// Repeat scale OCTAVES times, plus one note to end on tonic
+int idx_range = (scale_size * OCTAVES) + 1;
+
+
 CvSeq seq(
     12,  // int top_active
     11,  // int bot_active
@@ -30,7 +56,6 @@ void setup() {
     // Run 2x8
     seq.setOneSixteen();
     // seq.setTwoEights();
-
 }
 
 void loop() {
@@ -70,7 +95,13 @@ void loop() {
 
     // step and Quant Primary
     int note = seq.step();
-    int val = map(note, 0, 1023, 0, 24);
+    // int val = map(note, 0, 1023, 0, 24);
+
+    // Map input to range of Octaves plus one note (final tonic)
+    int idx = map(note, 0, 1023, 0, idx_range);
+    // int mod -> which degree
+    // int div -> which octave
+    int val = (idx % scale_size) + (octave * (idx / scale_size));
 
     // Quant Secondary
     int val2= map(seq.getSecondary(), 0, 1023, 0, 24);
