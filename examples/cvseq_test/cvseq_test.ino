@@ -5,15 +5,16 @@
 #define OUT_PIN_2 5
 #define TEMPO_PIN 2
 
+#define OCTAVES 3
+
 /*
     To play around with the Sequencer, wire a photo resitor to A0
     and an LED + speaker to pin 3
 */
 
-
 CvSeq seq(
-    2,  // int top_active
-    3,  // int bot_active
+    12,  // int top_active
+    11,  // int bot_active
     0,  // int top_in (Analog)
     1   // int bot_in (Analog)
 );
@@ -25,6 +26,11 @@ void setup() {
     pinMode(OUT_PIN_2, OUTPUT);
 
     Serial.begin(9600);
+
+    // Run 2x8
+    seq.setOneSixteen();
+    // seq.setTwoEights();
+
 }
 
 void loop() {
@@ -61,9 +67,6 @@ void loop() {
                 break;
         }
     }
-
-    // Run 2x8
-    seq.setTwoEights();
 
     // step and Quant Primary
     int note = seq.step();

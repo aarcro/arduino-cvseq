@@ -80,11 +80,11 @@ int CvSeq::step(){
 
     // Set address lines
     tmp_port = PINB;            // Read PORTB (pins 8-15)
-    Serial.println("read " + String(tmp_port));
+    // Serial.println("read " + String(tmp_port));
     tmp_port &= B11111000;      // Mask out the addr pins
-    Serial.println("masked " + String(tmp_port));
+    // Serial.println("masked " + String(tmp_port));
     tmp_port |= _cur_step % 8;  // Set the addr pins with 0-7
-    Serial.println("write " + String(tmp_port));
+    // Serial.println("write " + String(tmp_port));
     PORTB = tmp_port;           // Write new value
 
     // Read pot(s)
@@ -97,15 +97,13 @@ int CvSeq::step(){
             // Send top bank for low values
             // Or bottom bank for high values
             ret_value = _cur_step < 8 ? _top_value : _bot_value;
+            // Serial.println("Step " + String(_cur_step));
             digitalWrite(_top_active, _cur_step < 8 ? LOW : HIGH);  // active low
             digitalWrite(_bot_active, _cur_step > 7 ? LOW : HIGH);  // active low
             break;
         case _TWO_OUT:
             // Always the top bank in double read
             ret_value = _top_value;
-            // Both lights active
-            digitalWrite(_top_active, LOW);
-            digitalWrite(_bot_active, LOW);
             break;
     }
 
@@ -169,4 +167,8 @@ void CvSeq::setTwoEights(){
     _out_mode = _TWO_OUT;
     // make sure step is 0-7
     _cur_step = _cur_step % 8;
+
+    // Both lights active
+    digitalWrite(_top_active, LOW);
+    digitalWrite(_bot_active, LOW);
 }
