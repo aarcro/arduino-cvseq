@@ -5,7 +5,7 @@
 #define OUT_PIN_2 5
 #define TEMPO_PIN 2
 
-#define OCTAVES 1
+#define OCTAVES 3
 
 /*
     To play around with the Sequencer, wire a photo resitor to A0
@@ -32,7 +32,27 @@
 
 // ^^^ #include <werkstatt.h> ^^^
 
-int scale[] = {tonic, major2nd, major3rd, fourth, fifth, major6th, major7th};
+// Major
+// int scale[] = {tonic, major2nd, major3rd, fourth, fifth, major6th, major7th};
+
+// Minor
+// int scale[] = {tonic, major2nd, minor3rd, fourth, fifth, minor6th, minor7th};
+
+// Dorian
+// int scale[] = {tonic, major2nd, minor3rd, fourth, fifth, major6th, minor7th};
+
+// Phrygian
+// int scale[] = {tonic, minor2nd, minor3rd, fourth, fifth, minor6th, minor7th};
+
+// Locrian
+// int scale[] = {tonic, minor2nd, minor3rd, fourth, tritone, minor6th, minor7th};
+
+// Major Pentatonic (Jazz)
+//int scale[] = {tonic, major2nd, major3rd, fifth, major6th};
+
+// Blues
+int scale[] = {tonic, major2nd, minor3rd, fourth, fifth, major6th, minor7th};
+
 int scale_size = sizeof(scale)/sizeof(int);
 // Repeat scale OCTAVES times, plus one note to end on tonic
 int idx_range = (scale_size * OCTAVES) + 1;
