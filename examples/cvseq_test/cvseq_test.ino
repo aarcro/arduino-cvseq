@@ -5,7 +5,7 @@
 #define OUT_PIN_2 5
 #define TEMPO_PIN 2
 
-#define OCTAVES 3
+#define OCTAVES 1
 
 /*
     To play around with the Sequencer, wire a photo resitor to A0
@@ -53,9 +53,9 @@ void setup() {
 
     Serial.begin(9600);
 
+    // seq.setOneSixteen();
     // Run 2x8
-    seq.setOneSixteen();
-    // seq.setTwoEights();
+    seq.setTwoEights();
 }
 
 void loop() {
@@ -101,7 +101,7 @@ void loop() {
     int idx = map(note, 0, 1023, 0, idx_range);
     // int mod -> which degree
     // int div -> which octave
-    int val = (idx % scale_size) + (octave * (idx / scale_size));
+    int val = scale[(idx % scale_size)] + (octave * (idx / scale_size));
 
     // Quant Secondary
     int val2= map(seq.getSecondary(), 0, 1023, 0, 24);
@@ -115,7 +115,7 @@ void loop() {
     */
 
     // Write
-    analogWrite(OUT_PIN_1, val * 5);
+    analogWrite(OUT_PIN_1, val);
     analogWrite(OUT_PIN_2, val2 * 5);
 
     // Quant Tempo off Analog input
