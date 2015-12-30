@@ -134,8 +134,10 @@ void loop() {
     );
     */
 
-    // Write
+    // Write Pin1 Scale tone
     analogWrite(OUT_PIN_1, val);
+
+    // Write Pin2
     analogWrite(OUT_PIN_2, val2 * 5);
 
     // Quant Tempo off Analog input
