@@ -4,6 +4,7 @@
 #define OUT_PIN_1 6
 #define OUT_PIN_2 5
 #define TEMPO_PIN 2
+#define GATE_PIN 4
 
 #define OCTAVES 3
 
@@ -70,6 +71,7 @@ void setup() {
     pinMode(LED_PIN, OUTPUT);
     pinMode(OUT_PIN_1, OUTPUT);
     pinMode(OUT_PIN_2, OUTPUT);
+    pinMode(GATE_PIN, OUTPUT);
 
     Serial.begin(9600);
 
@@ -124,7 +126,7 @@ void loop() {
     int val = scale[(idx % scale_size)] + (octave * (idx / scale_size));
 
     // Quant Secondary
-    int val2= map(seq.getSecondary(), 0, 1023, 0, 24);
+    int val2 = map(seq.getSecondary(), 0, 1023, 0, 24);
     /*
     Serial.println(
         "Step: " + String(seq.getStep()) +
@@ -147,5 +149,26 @@ void loop() {
     // 600 bpm = 100ms
     // 60 to 2400 bpm (exponetial scale)
     int tempo = map(analogRead(TEMPO_PIN), 0, 1023, 33, 5);
-    delay(tempo * tempo);
+    tempo *= tempo;
+
+    if (seq.isDoubleOut()) {
+        // in 2x8 use bottom val for duration %
+        val2 = map(seq.getSecondary(), 0, 1023, 0, 100);
+        // Some tollerance around actual triggers
+        Serial.println("High cycle: " +String(val2)+ " ms: "+ String((val2 / 100.0) * tempo));
+        if (val2 > 5 ){
+            digitalWrite(GATE_PIN, HIGH);
+        }
+        delay((val2 / 100.0) * tempo);
+        if (val2 < 95) {
+            digitalWrite(GATE_PIN, LOW);
+        }
+        delay((1 - (val2 / 100.0)) * tempo);
+    } else {
+        // 50% Duty cycle on gate pin
+        digitalWrite(GATE_PIN, HIGH);
+        delay(.5 * tempo);
+        digitalWrite(GATE_PIN, LOW);
+        delay(.5 * tempo);
+    }
 }
